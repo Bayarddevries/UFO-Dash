@@ -10,6 +10,9 @@ const activeLinkClass = 'bg-slate-700 text-cyan-300';
 const inactiveLinkClass = 'text-slate-400 hover:bg-slate-800 hover:text-white';
 
 const Sidebar: React.FC = () => {
+  const getLinkClassName = ({ isActive }: { isActive: boolean }) => 
+    `${commonLinkClass} ${isActive ? activeLinkClass : inactiveLinkClass}`;
+
   return (
     <div className="w-64 bg-slate-950/70 border-r border-slate-800 flex-shrink-0 flex flex-col p-4 space-y-4">
       <div className="flex items-center space-x-2 px-2 pb-4 border-b border-slate-800">
@@ -19,21 +22,22 @@ const Sidebar: React.FC = () => {
       <nav className="flex-1 space-y-2">
         <NavLink
           to="/"
-          className={({ isActive }) => `${commonLinkClass} ${isActive ? activeLinkClass : inactiveLinkClass}`}
+          end
+          className={getLinkClassName}
         >
           <DashboardIcon />
           <span>Dashboard</span>
         </NavLink>
         <NavLink
           to="/chat"
-          className={({ isActive }) => `${commonLinkClass} ${isActive ? activeLinkClass : inactiveLinkClass}`}
+          className={getLinkClassName}
         >
           <ChatIcon />
           <span>AI Assistant</span>
         </NavLink>
         <NavLink
           to="/social-planner"
-          className={({ isActive }) => `${commonLinkClass} ${isActive ? activeLinkClass : inactiveLinkClass}`}
+          className={getLinkClassName}
         >
           <SocialIcon />
           <span>Social Planner</span>
