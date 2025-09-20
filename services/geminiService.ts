@@ -5,7 +5,7 @@ import { NewsArticle } from '../types';
 // You can get a key from Google AI Studio: https://aistudio.google.com/app/apikey
 const API_KEY = 'YOUR_API_KEY_HERE';
 
-export const isApiKeySet = API_KEY && API_KEY !== 'AIzaSyDphIwJtRocdSeGz_spQrE-8kuNW5i07ho';
+export const isApiKeySet = API_KEY && API_KEY !== 'YOUR_API_KEY_HERE';
 
 let ai: GoogleGenAI | null = null;
 if (isApiKeySet) {
