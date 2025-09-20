@@ -1,30 +1,21 @@
 import { GoogleGenAI, Chat, GenerateContentResponse, Type } from "@google/genai";
 import { NewsArticle } from '../types';
 
-// --- IMPORTANT SECURITY WARNING ---
-// For this simple deployment method, we are placing the API key directly in the code.
-// This is NOT recommended for production applications as it exposes your key to anyone
-// who views the website's source code. For personal projects or demos, this is
-// the simplest approach.
-//
-// Replace "YOUR_API_KEY_HERE" with your actual Google Gemini API key.
-const API_KEY = "YOUR_API_KEY_HERE";
+// IMPORTANT: REPLACE 'YOUR_API_KEY_HERE' WITH YOUR ACTUAL GEMINI API KEY
+// You can get a key from Google AI Studio: https://aistudio.google.com/app/apikey
+const API_KEY = 'YOUR_API_KEY_HERE';
+
+export const isApiKeySet = API_KEY && API_KEY !== 'YOUR_API_KEY_HERE';
 
 let ai: GoogleGenAI | null = null;
-export let isApiKeySet = false;
-
-// Check if the API key is the placeholder or an actual key.
-if (API_KEY && API_KEY !== "YOUR_API_KEY_HERE") {
+if (isApiKeySet) {
     ai = new GoogleGenAI({ apiKey: API_KEY });
-    isApiKeySet = true;
 } else {
-    // Log a warning to the console for the developer.
-    console.warn("API_KEY is not set. Please replace 'YOUR_API_KEY_HERE' in services/geminiService.ts with your actual Gemini API key.");
+    console.warn("API Key is not set. Please configure it in services/geminiService.ts");
 }
 
-
 export const fetchRecentNews = async (): Promise<NewsArticle[]> => {
-  if (!ai) return []; // Gracefully fail if API key is not set.
+  if (!ai) return [];
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
@@ -61,7 +52,7 @@ export const fetchRecentNews = async (): Promise<NewsArticle[]> => {
 };
 
 export const initChat = (): Chat | null => {
-  if (!ai) return null; // Gracefully fail if API key is not set.
+  if (!ai) return null;
   return ai.chats.create({
     model: 'gemini-2.5-flash',
     config: {
@@ -71,7 +62,7 @@ export const initChat = (): Chat | null => {
 };
 
 export const generateSocialPostIdeas = async (topic: string): Promise<string> => {
-    if (!ai) return "API Key not configured. Please set it in services/geminiService.ts.";
+    if (!ai) return "API key not configured. Please set it in the service file.";
     if (!topic) return "Please provide a topic.";
     try {
         const response = await ai.models.generateContent({
@@ -86,7 +77,7 @@ export const generateSocialPostIdeas = async (topic: string): Promise<string> =>
 };
 
 export const analyzeFileContent = async (fileName: string, content: string): Promise<string> => {
-    if (!ai) return "API Key not configured. Please set it in services/geminiService.ts.";
+    if (!ai) return "API key not configured. Please set it in the service file.";
     try {
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
