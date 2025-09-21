@@ -1,5 +1,5 @@
 import { GoogleGenAI, Chat, GenerateContentResponse, Type } from "@google/genai";
-import { NewsArticle } from '../types';
+import { NewsArticle } from '../types.ts';
 
 const getApiKey = (): string | null => {
   // For remote hosting, the user provides their own key, stored in localStorage.

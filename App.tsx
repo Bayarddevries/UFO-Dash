@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
-import Dashboard from './pages/Dashboard';
-import Chat from './pages/Chat';
-import SocialPlanner from './pages/SocialPlanner';
-import { isApiKeySet, saveApiKey } from './services/geminiService';
-import UfoIcon from './components/icons/UfoIcon';
+import Sidebar from './components/Sidebar.tsx';
+import Dashboard from './pages/Dashboard.tsx';
+import Chat from './pages/Chat.tsx';
+import SocialPlanner from './pages/SocialPlanner.tsx';
+import { isApiKeySet, saveApiKey } from './services/geminiService.ts';
+import UfoIcon from './components/icons/UfoIcon.tsx';
 
 
 const ApiKeySetup: React.FC<{ onKeySaved: () => void }> = ({ onKeySaved }) => {
