@@ -1,36 +1,74 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import Chat from './pages/Chat';
 import SocialPlanner from './pages/SocialPlanner';
-import { isApiKeySet } from './services/geminiService';
+import { isApiKeySet, saveApiKey } from './services/geminiService';
+import UfoIcon from './components/icons/UfoIcon';
 
-const ApiKeyBanner: React.FC = () => (
-  <div className="flex items-center justify-center h-screen bg-slate-900 text-slate-200 p-4">
-    <div className="max-w-2xl w-full p-8 text-center bg-slate-800 border border-red-500 rounded-lg shadow-xl">
-      <h1 className="text-2xl font-bold text-red-400 mb-4">Configuration Required</h1>
-      <p className="mb-6 text-slate-300">
-        Your Gemini API key is not set. To use this application, you must add your API key.
-      </p>
-      <div className="text-left bg-slate-900 p-4 rounded-md text-sm">
-        <p className="font-semibold">Follow these steps:</p>
-        <ol className="list-decimal list-inside mt-2 space-y-1">
-            <li>Open the file: <code className="font-mono text-cyan-400">services/geminiService.ts</code></li>
-            <li>
-                Find the line with the <code className="font-mono text-yellow-400">'YOUR_API_KEY_HERE'</code> placeholder.
-            </li>
-            <li>Replace the placeholder with your actual Gemini API key.</li>
-        </ol>
+
+const ApiKeySetup: React.FC<{ onKeySaved: () => void }> = ({ onKeySaved }) => {
+  const [localKey, setLocalKey] = useState('');
+
+  const handleSave = () => {
+    if (localKey.trim()) {
+      saveApiKey(localKey.trim());
+      onKeySaved();
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSave();
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center h-screen bg-slate-900 text-slate-200 p-4 font-mono">
+      <div className="max-w-xl w-full p-8 text-center bg-slate-800/50 border border-slate-700 rounded-lg shadow-2xl backdrop-blur-sm">
+        <div className="flex justify-center mb-4">
+          <UfoIcon />
+        </div>
+        <h1 className="text-2xl font-bold text-cyan-300 mb-3">Welcome to the UFO Research Hub</h1>
+        <p className="mb-6 text-slate-400">
+          To begin, please enter your Google Gemini API key. Your key is stored securely in your browser and is never sent to anyone except Google.
+        </p>
+        <div className="space-y-4">
+           <input
+            type="password"
+            value={localKey}
+            onChange={(e) => setLocalKey(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Enter your Gemini API key"
+            className="w-full bg-slate-900 border border-slate-700 rounded-md p-3 text-slate-200 focus:ring-2 focus:ring-cyan-500 focus:outline-none placeholder-slate-500"
+            aria-label="Gemini API Key"
+          />
+          <button
+            onClick={handleSave}
+            disabled={!localKey.trim()}
+            className="w-full px-4 py-3 bg-cyan-600 text-white font-semibold rounded-md hover:bg-cyan-500 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors"
+          >
+            Save & Continue
+          </button>
+        </div>
+        <p className="text-xs text-slate-500 mt-6">
+            You can get a key from {' '}
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">
+                Google AI Studio
+            </a>.
+        </p>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 
 const App: React.FC = () => {
-  if (!isApiKeySet) {
-    return <ApiKeyBanner />;
+  const [keyIsSet, setKeyIsSet] = useState(isApiKeySet());
+
+  if (!keyIsSet) {
+    return <ApiKeySetup onKeySaved={() => setKeyIsSet(true)} />;
   }
 
   return (

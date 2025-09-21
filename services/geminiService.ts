@@ -1,20 +1,33 @@
 import { GoogleGenAI, Chat, GenerateContentResponse, Type } from "@google/genai";
 import { NewsArticle } from '../types';
 
-// IMPORTANT: REPLACE 'YOUR_API_KEY_HERE' WITH YOUR ACTUAL GEMINI API KEY
-// You can get a key from Google AI Studio: https://aistudio.google.com/app/apikey
-const API_KEY = 'YOUR_API_KEY_HERE';
+const getApiKey = (): string | null => {
+  // For remote hosting, the user provides their own key, stored in localStorage.
+  // This approach avoids exposing a hardcoded key in a publicly accessible app.
+  return localStorage.getItem('gemini-api-key');
+};
 
-export const isApiKeySet = API_KEY && API_KEY !== 'AIzaSyDphIwJtRocdSeGz_spQrE-8kuNW5i07ho';
+export const saveApiKey = (key: string): void => {
+  localStorage.setItem('gemini-api-key', key);
+};
 
-let ai: GoogleGenAI | null = null;
-if (isApiKeySet) {
-    ai = new GoogleGenAI({ apiKey: API_KEY });
-} else {
-    console.warn("API Key is not set. Please configure it in services/geminiService.ts");
-}
+export const isApiKeySet = (): boolean => {
+  const key = getApiKey();
+  return !!key && key !== 'YOUR_API_KEY_HERE';
+};
+
+const getAiClient = (): GoogleGenAI | null => {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    console.warn("API Key is not set in local storage.");
+    return null;
+  }
+  // This is where the API key from local storage is used to initialize the client.
+  return new GoogleGenAI({ apiKey });
+};
 
 export const fetchRecentNews = async (): Promise<NewsArticle[]> => {
+  const ai = getAiClient();
   if (!ai) return [];
   try {
     const response = await ai.models.generateContent({
@@ -52,6 +65,7 @@ export const fetchRecentNews = async (): Promise<NewsArticle[]> => {
 };
 
 export const initChat = (): Chat | null => {
+  const ai = getAiClient();
   if (!ai) return null;
   return ai.chats.create({
     model: 'gemini-2.5-flash',
@@ -62,7 +76,8 @@ export const initChat = (): Chat | null => {
 };
 
 export const generateSocialPostIdeas = async (topic: string): Promise<string> => {
-    if (!ai) return "API key not configured. Please set it in the service file.";
+    const ai = getAiClient();
+    if (!ai) return "API key not configured. Please set it in the application.";
     if (!topic) return "Please provide a topic.";
     try {
         const response = await ai.models.generateContent({
@@ -77,7 +92,8 @@ export const generateSocialPostIdeas = async (topic: string): Promise<string> =>
 };
 
 export const analyzeFileContent = async (fileName: string, content: string): Promise<string> => {
-    if (!ai) return "API key not configured. Please set it in the service file.";
+    const ai = getAiClient();
+    if (!ai) return "API key not configured. Please set it in the application.";
     try {
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
