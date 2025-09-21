@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChatMessage, MessageSender } from '../types.ts';
 import { initChat } from '../services/geminiService.ts';
-// FIX: Aliased the Chat type from @google/genai to avoid conflict with the component name.
-import type { Chat as GeminiChat, GenerateContentResponse } from '@google/genai';
+// Aliased the Chat type from @google/genai to avoid conflict with the component name.
+import type { Chat as GeminiChat } from '@google/genai';
 
 
 const Chat: React.FC = () => {
@@ -11,20 +11,16 @@ const Chat: React.FC = () => {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  // FIX: Use the aliased GeminiChat type for the chatRef.
-  const chatRef = useRef<GeminiChat | null>(null);
+  // Initialize the chat service once, directly.
+  const chatRef = useRef<GeminiChat>(initChat());
   const chatBottomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    chatRef.current = initChat();
-  }, []);
-  
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   const handleSendMessage = useCallback(async () => {
-    if (!input.trim() || isLoading || !chatRef.current) return;
+    if (!input.trim() || isLoading) return;
 
     const userMessage: ChatMessage = { id: Date.now().toString(), sender: MessageSender.User, text: input };
     setMessages(prev => [...prev, userMessage]);
@@ -51,8 +47,8 @@ const Chat: React.FC = () => {
         sender: MessageSender.Model,
         text: 'Sorry, I encountered an error. Please try again.'
       };
-      setMessages(prev => prev.filter(msg => msg.id !== modelMessageId)); // remove streaming placeholder
-      setMessages(prev => [...prev, errorMessage]);
+      // remove streaming placeholder and add error message
+      setMessages(prev => [...prev.filter(msg => msg.id !== modelMessageId), errorMessage]);
     } finally {
       setIsLoading(false);
     }

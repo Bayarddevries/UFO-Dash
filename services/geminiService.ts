@@ -1,36 +1,15 @@
-import { GoogleGenAI, Chat, GenerateContentResponse, Type } from "@google/genai";
+import { GoogleGenAI, Chat, Type } from "@google/genai";
 import { NewsArticle } from '../types.ts';
 
-const getApiKey = (): string | null => {
-  // For remote hosting, the user provides their own key, stored in localStorage.
-  // This approach avoids exposing a hardcoded key in a publicly accessible app.
-  return localStorage.getItem('gemini-api-key');
-};
+// The API key is sourced directly from the environment.
+// The execution environment (e.g., AI Studio) is expected to provide process.env.API_KEY.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-export const saveApiKey = (key: string): void => {
-  localStorage.setItem('gemini-api-key', key);
-};
-
-export const isApiKeySet = (): boolean => {
-  const key = getApiKey();
-  return !!key && key !== 'YOUR_API_KEY_HERE';
-};
-
-const getAiClient = (): GoogleGenAI | null => {
-  const apiKey = getApiKey();
-  if (!apiKey) {
-    console.warn("API Key is not set in local storage.");
-    return null;
-  }
-  // This is where the API key from local storage is used to initialize the client.
-  return new GoogleGenAI({ apiKey });
-};
+const model = ai.models;
 
 export const fetchRecentNews = async (): Promise<NewsArticle[]> => {
-  const ai = getAiClient();
-  if (!ai) return [];
   try {
-    const response = await ai.models.generateContent({
+    const response = await model.generateContent({
       model: "gemini-2.5-flash",
       contents: "List the top 5 most significant news articles or developments about UFOs or UAPs from the last week. For each, provide a title, a direct URL, and a one or two-sentence summary.",
       config: {
@@ -58,15 +37,15 @@ export const fetchRecentNews = async (): Promise<NewsArticle[]> => {
     const parsedResponse = JSON.parse(response.text);
     return parsedResponse.articles || [];
 
-  } catch (error) {
+  } catch (error)
+ {
     console.error("Error fetching UFO news:", error);
+    // The UI handles the empty array case with a message.
     return [];
   }
 };
 
-export const initChat = (): Chat | null => {
-  const ai = getAiClient();
-  if (!ai) return null;
+export const initChat = (): Chat => {
   return ai.chats.create({
     model: 'gemini-2.5-flash',
     config: {
@@ -76,26 +55,22 @@ export const initChat = (): Chat | null => {
 };
 
 export const generateSocialPostIdeas = async (topic: string): Promise<string> => {
-    const ai = getAiClient();
-    if (!ai) return "API key not configured. Please set it in the application.";
     if (!topic) return "Please provide a topic.";
     try {
-        const response = await ai.models.generateContent({
+        const response = await model.generateContent({
             model: "gemini-2.5-flash",
             contents: `Generate 5 creative and engaging social media post ideas about ${topic}. Include a mix of formats like questions, facts, and story prompts. Format the output as a markdown list.`,
         });
         return response.text;
     } catch (error) {
         console.error("Error generating social media posts:", error);
-        return "An error occurred while generating ideas. Please try again.";
+        return "An error occurred while generating ideas. Please check your API key and try again.";
     }
 };
 
 export const analyzeFileContent = async (fileName: string, content: string): Promise<string> => {
-    const ai = getAiClient();
-    if (!ai) return "API key not configured. Please set it in the application.";
     try {
-        const response = await ai.models.generateContent({
+        const response = await model.generateContent({
             model: "gemini-2.5-flash",
             contents: `As a UFO research analyst, analyze the following document named "${fileName}". Provide a concise summary that includes:
 1. Key entities (people, places, organizations).
@@ -112,6 +87,6 @@ ${content}
         return response.text;
     } catch (error) {
         console.error("Error analyzing file content:", error);
-        return "Failed to analyze the document. Please try again.";
+        return "Failed to analyze the document. This could be due to an API key issue. Please try again.";
     }
 };
