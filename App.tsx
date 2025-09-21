@@ -1,9 +1,9 @@
 import React from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import Sidebar from './components/Sidebar.tsx';
-import Dashboard from './pages/Dashboard.tsx';
-import Chat from './pages/Chat.tsx';
-import SocialPlanner from './pages/SocialPlanner.tsx';
+import Sidebar from './components/Sidebar.js';
+import Dashboard from './pages/Dashboard.js';
+import Chat from './pages/Chat.js';
+import SocialPlanner from './pages/SocialPlanner.js';
 
 const App: React.FC = () => {
   return (

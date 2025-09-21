@@ -1,9 +1,9 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import DashboardIcon from './icons/DashboardIcon.tsx';
-import ChatIcon from './icons/ChatIcon.tsx';
-import SocialIcon from './icons/SocialIcon.tsx';
-import UfoIcon from './icons/UfoIcon.tsx';
+import DashboardIcon from './icons/DashboardIcon.js';
+import ChatIcon from './icons/ChatIcon.js';
+import SocialIcon from './icons/SocialIcon.js';
+import UfoIcon from './icons/UfoIcon.js';
 
 const commonLinkClass = 'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200';
 const activeLinkClass = 'bg-slate-700 text-cyan-300';

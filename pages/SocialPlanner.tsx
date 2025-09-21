@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { generateSocialPostIdeas } from '../services/geminiService.ts';
+import { generateSocialPostIdeas } from '../services/geminiService.js';
 
 const SocialPlanner: React.FC = () => {
   const [topic, setTopic] = useState<string>('The 1947 Roswell Incident');

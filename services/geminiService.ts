@@ -1,5 +1,5 @@
 import { GoogleGenAI, Chat, Type } from "@google/genai";
-import { NewsArticle } from '../types.ts';
+import { NewsArticle } from '../types.js';
 
 // The API key is sourced directly from the environment.
 // The execution environment (e.g., AI Studio) is expected to provide process.env.API_KEY.

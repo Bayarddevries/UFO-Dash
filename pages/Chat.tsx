@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ChatMessage, MessageSender } from '../types.ts';
-import { initChat } from '../services/geminiService.ts';
+import { ChatMessage, MessageSender } from '../types.js';
+import { initChat } from '../services/geminiService.js';
 // Aliased the Chat type from @google/genai to avoid conflict with the component name.
 import type { Chat as GeminiChat } from '@google/genai';
 
